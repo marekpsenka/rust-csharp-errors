@@ -16,6 +16,20 @@
             "label": "Build Rust Examples"
         },
         {
+            "type": "cargo",
+            "command": "test",
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": {
+                "kind": "test"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/rust_examples"
+            },
+            "label": "Run Rust Examples"
+        },
+        {
             "command": "dotnet",
             "args": [
                 "build"
@@ -30,6 +44,22 @@
                 "cwd": "${workspaceFolder}/CsExamples"
             },
             "label": "Build .NET Examples"
+        },
+        {
+            "command": "dotnet",
+            "args": [
+                "test"
+            ],
+            "problemMatcher": [
+                "$msCompile"
+            ],
+            "group": {
+                "kind": "test"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/CsExamples"
+            },
+            "label": "Run .NET Examples"
         }
     ]
 }

@@ -57,7 +57,7 @@ public void BuildingThisGivesYouNoWarning()
 ```
 
 Reading a line from the console may fail in C#, but you can only learn that from the docstring
-unfortunately. Documenting modes of failure is far inferior to explicitly including it in 
+unfortunately. Documenting modes of failure is far inferior to explicitly including them in 
 the return value.
 
 ```
@@ -71,3 +71,11 @@ Exceptions:
     T:System.ArgumentOutOfRangeException:
     The number of characters in the next line of characters is greater than Int32.MaxValue.
 ```
+
+## The many pain points of exceptions
+
+Stack unwinding can easily break encapsulation
+
+Trouble with granularity of handling
+
+
