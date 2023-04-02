@@ -74,8 +74,77 @@ Exceptions:
 
 ## The many pain points of exceptions
 
-Stack unwinding can easily break encapsulation
+## Exceptions can easily break encapsulation
 
-Trouble with granularity of handling
+One problem I encounter very often in practice originates in the fact that it is very easy to break
+encapsulation when using exceptions incorrectly. Consider the interface:
+
+```C#
+public interface INewsService
+{
+    Task<List<string>> GetLatestNews();
+}
+```
+
+The point of creating interfaces is to decouple pieces of code by having them depend on a common
+abstraction instead of letting them know the implementation of the other. The intent behind 
+`INewsService` in a larger application will be to inject a particular implementation into some
+higher application logic that performs complex tasks.
+
+Suppose that a developer called Bob implements the `INewsService` interface like this:
+
+```C#
+    public async Task<List<string>> GetLatestNews()
+    {
+        var response = await _httpClient.GetAsync("http://someWrongAdress831");
+
+        // Here the implementation would convert response into a list
+        // of the latest news. We return a made up list for the sake of 
+        // the example.
+    }
+```
+
+Another developer called Sam is responsible for creating a news reader for the user interface.
+The body of the test method below represents what Sam might write working only with the interface:
+
+```C#
+public void SadNewsReader()
+{
+    // Picture the NewsReader resolving `BadHttpNewsService` via DI
+    INewsService newsService = new BadHttpNewsService();
+
+    Assert.ThrowsAsync<HttpRequestException>(
+        async () => {
+            var latestNews = await newsService.GetLatestNews();
+            foreach (var piece in latestNews)
+                Console.WriteLine(piece);
+        }
+    );
+}
+```
+
+TODO: Rename BadHttpNewsService -> BadNewsService
+
+When Sam obtains the implementation of `INewsService` via `BadHttpNewsService` Bob,
+they will be unpleasantly surprised. The `GetLatestNews` method will throw a `HttpRequestException`.
+The problem is that this reveals an implementation detail of `BadHttpNewsService`, betraying
+the purpose of having an interface.
+
+Sam, being under pressure to deliver fast, resorts to handling the `HttpRequestException`
+like this:
+
+```C#
+try
+{
+    var latestNews = newsService.GetLatestNews();
+}
+catch (HttpRequestException) // No not like this !!!
+{
+        // This is where encapsulation would be broken. The role of the interface is to
+        // hide implementation details!
+}
+```
+
+## Trouble with granularity of handling
 
 

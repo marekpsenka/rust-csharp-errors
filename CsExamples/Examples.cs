@@ -5,11 +5,6 @@ namespace CsExamples;
 
 public class Examples
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-
     [Test]
     [Ignore("Do not block test with input")]
     public void BuildingThisGivesYouNoWarning()
@@ -18,7 +13,7 @@ public class Examples
     }
 
     [Test]
-    public void NewsReader01()
+    public void SadNewsReader()
     {
         // Picture the NewsReader resolving `BadHttpNewsService` via DI
         INewsService newsService = new BadHttpNewsService();
@@ -30,5 +25,27 @@ public class Examples
                     Console.WriteLine(piece);
             }
         );
+    }
+
+    [Test]
+    public void HappyNewsReader()
+    {
+        // Picture the NewsReader resolving `GoodHttpNewsService` via DI
+        INewsService newsService = new GoodHttpNewsService();
+
+        try
+        {
+            var latestNews = newsService.GetLatestNews();
+        }
+        catch (NewsServiceException)
+        {
+            // Here the news reader would write to a log or notify the user
+            Assert.Pass();
+        }
+        // catch (HttpRequestException) !!!
+        // {
+        //      This is where encapsulation would be broken. The role of the interface is to
+        //      hide implementation details!
+        // }
     }
 }
