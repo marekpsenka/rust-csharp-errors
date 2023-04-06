@@ -1,6 +1,6 @@
 namespace CsExamples.News;
 
-public class GoodHttpNewsService : INewsService
+public class GoodNewsService : INewsService
 {
     static readonly HttpClient _httpClient = new HttpClient(); 
 

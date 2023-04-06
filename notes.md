@@ -145,6 +145,43 @@ catch (HttpRequestException) // No not like this !!!
 }
 ```
 
+The trouble is that the correctness of Sam's error handling depends on an implementation detail
+of the `NewsService`. If Bob changes the news service protocol from HTTP to something else, then
+Sam's code must change as well. This is the type of issue that _dependency inversion_ is supposed
+to prevent.
+
+A correct strategy is to define exception types associated with the particular interface.
+The coarsest approach is to define a single exception type that will serve as the _error type_ 
+associated with the interface. Clients of the interface can easily subscribe to the contract that
+only the associated exception type will propagate from calls to the interface methods.
+
+```C#
+    public async Task<List<string>> GetLatestNews()
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync("http://someWrongAdress831");
+        }
+        catch (HttpRequestException e)
+        {
+            throw new NewsServiceException("Http client failed to GET", e);
+        }
+
+        // Here the implementation would convert response into a list
+        // of the latest news. We return a made up list for the sake of 
+        // the example.
+
+        return new List<string> { "A chicken crossed the road", 
+            "Science says turtles are friendly" };
+    }
+```
+
+## No restriction on how high exceptions propagate up the call stack
+
+The fact that there is no restriction on how high up the call stack exceptions can propagate
+makes breaking encapsulation all the more likely. 
+
 ## Trouble with granularity of handling
 
+![Call Stack](call_stack.svg)
 

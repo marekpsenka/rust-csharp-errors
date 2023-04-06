@@ -16,7 +16,7 @@ public class Examples
     public void SadNewsReader()
     {
         // Picture the NewsReader resolving `BadHttpNewsService` via DI
-        INewsService newsService = new BadHttpNewsService();
+        INewsService newsService = new BadNewsService();
 
         Assert.ThrowsAsync<HttpRequestException>(
             async () => {
@@ -31,7 +31,7 @@ public class Examples
     public void HappyNewsReader()
     {
         // Picture the NewsReader resolving `GoodHttpNewsService` via DI
-        INewsService newsService = new GoodHttpNewsService();
+        INewsService newsService = new GoodNewsService();
 
         try
         {
