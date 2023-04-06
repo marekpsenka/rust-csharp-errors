@@ -123,8 +123,6 @@ public void SadNewsReader()
 }
 ```
 
-TODO: Rename BadHttpNewsService -> BadNewsService
-
 When Sam obtains the implementation of `INewsService` via `BadHttpNewsService` Bob,
 they will be unpleasantly surprised. The `GetLatestNews` method will throw a `HttpRequestException`.
 The problem is that this reveals an implementation detail of `BadHttpNewsService`, betraying
@@ -181,7 +179,21 @@ only the associated exception type will propagate from calls to the interface me
 The fact that there is no restriction on how high up the call stack exceptions can propagate
 makes breaking encapsulation all the more likely. 
 
+![Call Stack](./figures/call_stack.png)
+
+In the above figure we see an example call stack that might be part of an application with a
+user interface. Let's see what could happen if exceptions propagate up this call stack from the
+`HttpClient.GetAsync()` method.
+
+If a `HttpRequestException` is caught in `LatestNewsView.Draw()` it is not great for the caller, but at this level
+it is not too difficult to realize that `NewsService` probably uses HTTP to fetch the news and getting 
+`HttpRequestException`s makes some sense.
+
+But the higher we climb in the stack, the harder it is to identify the meaning of exceptions from its depths.
+In particular, if `HttpRequestException` is caught in `Application.DrawUI()` the question everybody is going
+to be asking is _What does drawing the UI have to do with HTTP?!_
+
 ## Trouble with granularity of handling
 
-![Call Stack](call_stack.svg)
-
+In this section we will show that exceptions are not only unrestricted in 'depth', but also
+unrestricted in 'width'.
